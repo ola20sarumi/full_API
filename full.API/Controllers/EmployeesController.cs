@@ -17,7 +17,7 @@ namespace full.API.Controllers
         [HttpGet]
         public async Task<ActionResult> GetAllEmployees()
         {
-          var employees = await _fullDbContext.Employees.ToListAsync();
+            var employees = await _fullDbContext.Employees.ToListAsync();
             return Ok(employees);
         }
 
@@ -25,17 +25,19 @@ namespace full.API.Controllers
         public async Task<IActionResult> AddEmployee([FromBody] Employee employeeRequest)
         {
             employeeRequest.Id = Guid.NewGuid();
-           await _fullDbContext.Employees.AddAsync(employeeRequest);
+            await _fullDbContext.Employees.AddAsync(employeeRequest);
             await _fullDbContext.SaveChangesAsync();
             return Ok(employeeRequest);
         }
 
         [HttpGet]
-        [Route("(id:Guid)")]
+        [Route("{id:Guid}")]
+
+        //[HttpGet("{id:int}")]
         public async Task<IActionResult> GetEmployee([FromRoute] Guid id)
         {
-            var employee = 
-                await _fullDbContext.Employees.FirstOrDefaultAsync(x => x.Id == id);
+            var employee =
+                await _fullDbContext.Employees.FirstOrDefaultAsync((x) => x.Id == id);
 
             if (employee == null)
             {
@@ -44,5 +46,46 @@ namespace full.API.Controllers
             return Ok(employee);
 
         }
+
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> UpdateEmployee([FromRoute] Guid id, Employee updateEmployeeRequest)
+        {
+            
+            var employee = await _fullDbContext.Employees.FindAsync(id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            employee.Name = updateEmployeeRequest.Name;
+            employee.Email = updateEmployeeRequest.Email;
+            employee.Salary = updateEmployeeRequest.Salary;
+            employee.Phone = updateEmployeeRequest.Phone;
+            employee.Department = updateEmployeeRequest.Department;
+
+           await _fullDbContext.SaveChangesAsync();
+
+            return Ok(employee);
+
+        }
+
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> DeleteEmployee([FromRoute] Guid id)
+        {
+            var employee = await _fullDbContext.Employees.FindAsync(id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            _fullDbContext.Employees.Remove(employee);
+            await _fullDbContext.SaveChangesAsync();
+
+            return Ok(employee);
+        }
+
     }
 }
