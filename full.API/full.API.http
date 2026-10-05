@@ -1,0 +1,38 @@
+@baseUrl = https://localhost:7045
+
+### List employees (filter + paging; total in X-Total-Count header)
+GET {{baseUrl}}/api/employees?search=&department=&page=1&pageSize=20
+
+### Create an employee
+# @name create
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{
+  "name": "Ada Lovelace",
+  "email": "ada@example.com",
+  "phone": "+44 7700 900123",
+  "salary": 72000,
+  "department": "Engineering"
+}
+
+### Get the created employee
+GET {{baseUrl}}/api/employees/{{create.response.body.$.id}}
+
+### Update it
+PUT {{baseUrl}}/api/employees/{{create.response.body.$.id}}
+Content-Type: application/json
+
+{
+  "name": "Ada King",
+  "email": "ada@example.com",
+  "phone": "+44 7700 900123",
+  "salary": 80000,
+  "department": "Research"
+}
+
+### Delete it
+DELETE {{baseUrl}}/api/employees/{{create.response.body.$.id}}
+
+### Health
+GET {{baseUrl}}/health
